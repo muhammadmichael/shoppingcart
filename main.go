@@ -24,6 +24,7 @@ func main() {
 
 	app.Get("/login", authController.Login)
 	app.Get("/register", authController.Register)
+	app.Post("/register", authController.AddRegisteredUser)
 
 	app.Listen(":3000")
 }
