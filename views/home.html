@@ -1,0 +1,25 @@
+{{template "partials/header" .}}
+
+<h1>Selamat Datang di {{.Title}} App</h1>
+<p>Product List</p>
+
+<div class="card-group">
+    {{range .Products}}
+    <div class="card">
+        <a href="/products/detail/{{.Id}}">
+            <img class="card-img-top" src="{{.Image}}" alt="Card image cap" />
+        </a>
+
+        <div class="card-body">
+            <p><a href="/products/detail/{{.Id}}" class="card-title">{{.Name}}</a></p>
+            <p class="card-text">{{.Price}}</p>
+        </div>
+
+    </div>
+    {{end}}
+</div>
+<br>
+<br>
+
+
+{{template "partials/footer" .}}

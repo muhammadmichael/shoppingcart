@@ -33,8 +33,8 @@ func (controller *ProductController) GetAllProduct(c *fiber.Ctx) error {
 		return c.SendStatus(500) // http 500 internal server error
 	}
 
-	return c.Render("products", fiber.Map{
-		"Title":    "Daftar Produk",
+	return c.Render("home", fiber.Map{
+		"Title":    "Shopping Cart",
 		"Products": products,
 	})
 }
@@ -69,8 +69,8 @@ func (controller *ProductController) AddPostedProduct(c *fiber.Ctx) error {
 			// => "tutorial.pdf" 360641 "application/pdf"
 
 			// Save the files to disk:
-			product.Image = fmt.Sprintf("./upload/%s", file.Filename)
-			if err := c.SaveFile(file, fmt.Sprintf("./upload/%s", file.Filename)); err != nil {
+			product.Image = fmt.Sprintf("public/upload/%s", file.Filename)
+			if err := c.SaveFile(file, fmt.Sprintf("public/upload/%s", file.Filename)); err != nil {
 				return err
 			}
 		}
@@ -127,17 +127,39 @@ func (controller *ProductController) UpdateProduct(c *fiber.Ctx) error {
 
 // POST /products/ubah/:id
 func (controller *ProductController) AddUpdatedProduct(c *fiber.Ctx) error {
-	var myform models.Product
+	var product models.Product
 
 	params := c.AllParams() // "{"id": "1"}"
 	intId, _ := strconv.Atoi(params["id"])
-	myform.Id = intId
+	product.Id = intId
 
-	if err := c.BodyParser(&myform); err != nil {
+	if err := c.BodyParser(&product); err != nil {
 		return c.Redirect("/products")
 	}
+
+	// Parse the multipart form:
+	if form, err := c.MultipartForm(); err == nil {
+		// => *multipart.Form
+
+		// Get all files from "image" key:
+		files := form.File["image"]
+		// => []*multipart.FileHeader
+
+		// Loop through files:
+		for _, file := range files {
+			fmt.Println(file.Filename, file.Size, file.Header["Content-Type"][0])
+			// => "tutorial.pdf" 360641 "application/pdf"
+
+			// Save the files to disk:
+			product.Image = fmt.Sprintf("public/upload/%s", file.Filename)
+			if err := c.SaveFile(file, fmt.Sprintf("public/upload/%s", file.Filename)); err != nil {
+				return err
+			}
+		}
+	}
+
 	// save product
-	err := models.UpdateProduct(controller.Db, &myform)
+	err := models.UpdateProduct(controller.Db, &product)
 	if err != nil {
 		return c.Redirect("/products")
 	}
