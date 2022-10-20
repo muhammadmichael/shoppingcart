@@ -22,13 +22,8 @@ func main() {
 	// static
 	app.Static("/public", "./public")
 
-	// controllers
-	prodController := controllers.InitProductController()
-	authController := controllers.InitAuthController(store)
-
-	prod := app.Group("/products")
-	prod.Get("/", prodController.GetAllProduct)
-	prod.Get("/create", func(c *fiber.Ctx) error {
+	// Middleware to check login
+	CheckLogin := func(c *fiber.Ctx) error {
 		sess, _ := store.Get(c)
 		val := sess.Get("username")
 		if val != nil {
@@ -36,13 +31,20 @@ func main() {
 		}
 
 		return c.Redirect("/login")
+	}
 
-	}, prodController.AddProduct)
-	prod.Post("/create", prodController.AddPostedProduct)
+	// controllers
+	prodController := controllers.InitProductController()
+	authController := controllers.InitAuthController(store)
+
+	prod := app.Group("/products")
+	prod.Get("/", prodController.GetAllProduct)
+	prod.Get("/create", CheckLogin, prodController.AddProduct)
+	prod.Post("/create", CheckLogin, prodController.AddPostedProduct)
 	prod.Get("/detail/:id", prodController.DetailProduct)
-	prod.Get("/ubah/:id", prodController.UpdateProduct)
-	prod.Post("/ubah/:id", prodController.AddUpdatedProduct)
-	prod.Get("/hapus/:id", prodController.DeleteProduct)
+	prod.Get("/ubah/:id", CheckLogin, prodController.UpdateProduct)
+	prod.Post("/ubah/:id", CheckLogin, prodController.AddUpdatedProduct)
+	prod.Get("/hapus/:id", CheckLogin, prodController.DeleteProduct)
 
 	app.Get("/login", authController.Login)
 	app.Post("/login", authController.LoginPosted)

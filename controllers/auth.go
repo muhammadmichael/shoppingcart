@@ -57,7 +57,7 @@ func (controller *AuthController) LoginPosted(c *fiber.Ctx) error {
 
 	// Compare password
 	compare := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(myform.Password))
-	if compare == nil { // compare == nil artinya compare true
+	if compare == nil { // compare == nil artinya hasil compare di atas true
 		sess.Set("username", user.Username)
 		sess.Save()
 
