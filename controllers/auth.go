@@ -5,21 +5,28 @@ import (
 	"rapid/shoppingcart/models"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/session"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
-type AuthController struct {
-	// Declare variables
-	Db *gorm.DB
+type LoginForm struct {
+	Username string `form:"username" json:"username" validate:"required"`
+	Password string `form:"password" json:"password" validate:"required"`
 }
 
-func InitAuthController() *AuthController {
+type AuthController struct {
+	// Declare variables
+	Db    *gorm.DB
+	store *session.Store
+}
+
+func InitAuthController(s *session.Store) *AuthController {
 	db := database.InitDb()
 	// gorm sync
 	db.AutoMigrate(&models.User{})
 
-	return &AuthController{Db: db}
+	return &AuthController{Db: db, store: s}
 }
 
 // GET /login
@@ -27,6 +34,37 @@ func (controller *AuthController) Login(c *fiber.Ctx) error {
 	return c.Render("login", fiber.Map{
 		"Title": "Login",
 	})
+}
+
+// post /login
+func (controller *AuthController) LoginPosted(c *fiber.Ctx) error {
+	sess, err := controller.store.Get(c)
+	if err != nil {
+		panic(err)
+	}
+	var user models.User
+	var myform LoginForm
+
+	if err := c.BodyParser(&myform); err != nil {
+		return c.Redirect("/login")
+	}
+
+	// Find user
+	errs := models.FindUserByUsername(controller.Db, &user, myform.Username)
+	if errs != nil {
+		return c.Redirect("/login") // Unsuccessful login (cannot find user)
+	}
+
+	// Compare password
+	compare := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(myform.Password))
+	if compare == nil { // compare == nil artinya compare true
+		sess.Set("username", user.Username)
+		sess.Save()
+
+		return c.Redirect("/products")
+	}
+
+	return c.Redirect("/login")
 }
 
 // GET /register
@@ -58,4 +96,17 @@ func (controller *AuthController) AddRegisteredUser(c *fiber.Ctx) error {
 	}
 	// if succeed
 	return c.Redirect("/login")
+}
+
+// /logout
+func (controller *AuthController) Logout(c *fiber.Ctx) error {
+
+	sess, err := controller.store.Get(c)
+	if err != nil {
+		panic(err)
+	}
+	sess.Destroy()
+	return c.Render("login", fiber.Map{
+		"Title": "Login",
+	})
 }
