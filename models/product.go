@@ -13,6 +13,15 @@ type Product struct {
 	Price    float32 `form:"price" json: "price" validate:"required"`
 }
 
+// CRUD
+func CreateProduct(db *gorm.DB, newProduct *Product) (err error) {
+	err = db.Create(newProduct).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func ReadProducts(db *gorm.DB, products *[]Product) (err error) {
 	err = db.Find(products).Error
 	if err != nil {
@@ -26,5 +35,17 @@ func ReadProductById(db *gorm.DB, product *Product, id int) (err error) {
 	if err != nil {
 		return err
 	}
+	return nil
+}
+
+func UpdateProduct(db *gorm.DB, product *Product) (err error) {
+	db.Save(product)
+
+	return nil
+}
+
+func DeleteProductById(db *gorm.DB, product *Product, id int) (err error) {
+	db.Where("id=?", id).Delete(product)
+
 	return nil
 }
