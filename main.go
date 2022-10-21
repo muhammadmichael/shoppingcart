@@ -20,7 +20,9 @@ func main() {
 	})
 
 	// static
-	app.Static("/public", "./public")
+	app.Static("/", "./public", fiber.Static{
+		Index: "",
+	})
 
 	// Middleware to check login
 	CheckLogin := func(c *fiber.Ctx) error {
