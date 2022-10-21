@@ -31,7 +31,7 @@ func InsertProductToTransaksi(db *gorm.DB, insertedTransaksi *Cart, product *Pro
 }
 
 func ReadAllProductsInTransaksi(db *gorm.DB, transaksi *Transaksi, id int) (err error) {
-	err = db.Where("user_id=?", id).Preload("Products").Find(transaksi).Error
+	err = db.Where("id=?", id).Preload("Products").Find(transaksi).Error
 	if err != nil {
 		return err
 	}

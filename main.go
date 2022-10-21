@@ -57,6 +57,7 @@ func main() {
 
 	history := app.Group("/history")
 	history.Get("/:userid", CheckLogin, transaksiController.GetTransaksi)
+	history.Get("/detail/:transaksiid", CheckLogin, transaksiController.DetailTransaksi)
 
 	app.Get("/login", authController.Login)
 	app.Post("/login", authController.LoginPosted)

@@ -43,3 +43,9 @@ func ReadCartById(db *gorm.DB, cart *Cart, id int) (err error) {
 	}
 	return nil
 }
+
+func UpdateCart(db *gorm.DB, cart *Cart, id int) (err error) {
+	db.Where("user_id=?", id).Find(cart).Association("Products").Clear()
+
+	return nil
+}

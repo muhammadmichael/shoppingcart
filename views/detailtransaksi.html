@@ -1,0 +1,23 @@
+{{template "partials/header" .}}
+
+<h1>Detail Transaksi</h1>
+<p>Product List</p>
+{{range .Products}}
+<div class="card-group">
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">
+                <a href="/products/detail/{{.Id}}" class="card-title">{{.Name}}</a>
+            </h5>
+            <h6 class="card-subtitle mb-2 text-muted">Product Id: {{.Id}}
+            </h6>
+            <p class="card-text">Price: {{.Price}}
+            </p>
+        </div>
+    </div>
+</div>
+<br>
+{{end}}
+<br>
+
+{{template "partials/footer" .}}

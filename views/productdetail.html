@@ -28,11 +28,13 @@
 <div>
     <a href="/products" class="btn btn-primary">Back</a>
     &nbsp;
+    {{if .UserId}}
     <a href="/products/ubah/{{.Product.Id}}" class="btn btn-outline-primary">Ubah</a>
     &nbsp;
     <a href="/products/hapus/{{.Product.Id}}" class="btn btn-danger">Hapus</a>
     &nbsp;
     <a href="/products/addtocart/{{.UserId}}/product/{{.Product.Id}}" class="btn btn-outline-success">Add to Cart</a>
+    {{end}}
 </div>
 
 {{template "partials/footer" .}}
