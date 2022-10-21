@@ -20,7 +20,9 @@ func main() {
 	})
 
 	// static
-	app.Static("/public", "./public")
+	app.Static("/", "./public", fiber.Static{
+		Index: "",
+	})
 
 	// Middleware to check login
 	CheckLogin := func(c *fiber.Ctx) error {
@@ -34,8 +36,10 @@ func main() {
 	}
 
 	// controllers
-	prodController := controllers.InitProductController()
+	prodController := controllers.InitProductController(store)
 	authController := controllers.InitAuthController(store)
+	cartController := controllers.InitCartController(store)
+	transaksiController := controllers.InitTransaksiController(store)
 
 	prod := app.Group("/products")
 	prod.Get("/", prodController.GetAllProduct)
@@ -45,6 +49,17 @@ func main() {
 	prod.Get("/ubah/:id", CheckLogin, prodController.UpdateProduct)
 	prod.Post("/ubah/:id", CheckLogin, prodController.AddUpdatedProduct)
 	prod.Get("/hapus/:id", CheckLogin, prodController.DeleteProduct)
+	prod.Get("/addtocart/:cartid/product/:productid", CheckLogin, cartController.InsertToCart)
+
+	cart := app.Group("/shoppingcart")
+	cart.Get("/:cartid", CheckLogin, cartController.GetShoppingCart)
+
+	transaksi := app.Group("/checkout")
+	transaksi.Get("/:userid", CheckLogin, transaksiController.InsertToTransaksi)
+
+	history := app.Group("/history")
+	history.Get("/:userid", CheckLogin, transaksiController.GetTransaksi)
+	history.Get("/detail/:transaksiid", CheckLogin, transaksiController.DetailTransaksi)
 
 	app.Get("/login", authController.Login)
 	app.Post("/login", authController.LoginPosted)

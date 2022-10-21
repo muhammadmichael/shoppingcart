@@ -1,14 +1,17 @@
 {{template "partials/header" .}}
 
 <h1>Detail Produk</h1>
+
 <br>
-<div class="card-group">
+<div class="card-group" style="width: 18rem;">
     <div class="card">
         <div class="card-body">
             <div class="card-body">
+                <img class="card-img-top" src="/{{.Product.Image}}" alt="Card image cap" />
                 <h5 class="card-title">
                     {{.Product.Name}}
                 </h5>
+                
                 <h6 class="card-subtitle mb-2 text-muted">Product Id: {{.Product.Id}}
                 </h6>
                 <p class="card-text">Quantity: {{.Product.Quantity}}
@@ -26,11 +29,13 @@
 <div>
     <a href="/products" class="btn btn-primary">Back</a>
     &nbsp;
+    {{if .UserId}}
     <a href="/products/ubah/{{.Product.Id}}" class="btn btn-outline-primary">Ubah</a>
     &nbsp;
     <a href="/products/hapus/{{.Product.Id}}" class="btn btn-danger">Hapus</a>
     &nbsp;
-    <a href="/products/addtocart/{{.Product.Id}}" class="btn btn-outline-success">Add to Cart</a>
+    <a href="/products/addtocart/{{.UserId}}/product/{{.Product.Id}}" class="btn btn-outline-success">Add to Cart</a>
+    {{end}}
 </div>
 
 {{template "partials/footer" .}}

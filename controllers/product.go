@@ -7,20 +7,22 @@ import (
 	"strconv"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/session"
 	"gorm.io/gorm"
 )
 
 type ProductController struct {
 	// Declare variables
-	Db *gorm.DB
+	Db    *gorm.DB
+	store *session.Store
 }
 
-func InitProductController() *ProductController {
+func InitProductController(s *session.Store) *ProductController {
 	db := database.InitDb()
 	// gorm sync
 	db.AutoMigrate(&models.Product{})
 
-	return &ProductController{Db: db}
+	return &ProductController{Db: db, store: s}
 }
 
 // Routing
@@ -33,9 +35,16 @@ func (controller *ProductController) GetAllProduct(c *fiber.Ctx) error {
 		return c.SendStatus(500) // http 500 internal server error
 	}
 
+	sess, err := controller.store.Get(c)
+	if err != nil {
+		panic(err)
+	}
+	val := sess.Get("userId")
+
 	return c.Render("home", fiber.Map{
 		"Title":    "Shopping Cart",
 		"Products": products,
+		"UserId":   val,
 	})
 }
 
@@ -101,9 +110,16 @@ func (controller *ProductController) DetailProduct(c *fiber.Ctx) error {
 		return c.SendStatus(500) // http 500 internal server error
 	}
 
+	sess, err := controller.store.Get(c)
+	if err != nil {
+		panic(err)
+	}
+	val := sess.Get("userId")
+
 	return c.Render("productdetail", fiber.Map{
 		"Title":   "Detail Product",
 		"Product": product,
+		"UserId":  val,
 	})
 }
 

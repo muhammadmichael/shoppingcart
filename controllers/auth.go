@@ -59,6 +59,7 @@ func (controller *AuthController) LoginPosted(c *fiber.Ctx) error {
 	compare := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(myform.Password))
 	if compare == nil { // compare == nil artinya hasil compare di atas true
 		sess.Set("username", user.Username)
+		sess.Set("userId", user.ID)
 		sess.Save()
 
 		return c.Redirect("/products")
@@ -77,6 +78,7 @@ func (controller *AuthController) Register(c *fiber.Ctx) error {
 // POST /register
 func (controller *AuthController) AddRegisteredUser(c *fiber.Ctx) error {
 	var user models.User
+	var cart models.Cart
 
 	if err := c.BodyParser(&user); err != nil {
 		return c.SendStatus(400) // Bad Request, RegisterForm is not complete
@@ -89,11 +91,24 @@ func (controller *AuthController) AddRegisteredUser(c *fiber.Ctx) error {
 	// Simpan hashing, bukan plain passwordnya
 	user.Password = sHash
 
-	// save product
+	// save user
 	err := models.CreateUser(controller.Db, &user)
 	if err != nil {
 		return c.SendStatus(500) // Server error, gagal menyimpan user
 	}
+
+	// Find user
+	errs := models.FindUserByUsername(controller.Db, &user, user.Username)
+	if errs != nil {
+		return c.SendStatus(500) // Server error, gagal menyimpan user
+	}
+
+	// also create cart
+	errCart := models.CreateCart(controller.Db, &cart, user.ID)
+	if errCart != nil {
+		return c.SendStatus(500) // Server error, gagal menyimpan user
+	}
+
 	// if succeed
 	return c.Redirect("/login")
 }
