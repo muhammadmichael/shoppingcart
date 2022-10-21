@@ -47,20 +47,20 @@ func (controller *TransaksiController) InsertToTransaksi(c *fiber.Ctx) error {
 	return c.Redirect("/products")
 }
 
-// GET /shoppingcart/:transaksiid
+// GET /historytransaksi/:userid
 func (controller *TransaksiController) GetTransaksi(c *fiber.Ctx) error {
 	params := c.AllParams() // "{"id": "1"}"
 
-	intTransaksiId, _ := strconv.Atoi(params["transaksiid"])
+	intUserId, _ := strconv.Atoi(params["userid"])
 
-	var cart models.Cart
-	err := models.ReadAllProductsInCart(controller.Db, &cart, intTransaksiId)
+	var transaksis []models.Transaksi
+	err := models.ReadTransaksiById(controller.Db, &transaksis, intUserId)
 	if err != nil {
 		return c.SendStatus(500) // http 500 internal server error
 	}
-
-	return c.Render("shoppingcart", fiber.Map{
-		"Title":    "Detail Product",
-		"Products": cart.Products,
+	return c.Render("transaksi", fiber.Map{
+		"Title":      "History Transaksi",
+		"Transaksis": transaksis,
 	})
+
 }

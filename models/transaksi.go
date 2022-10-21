@@ -6,6 +6,7 @@ import (
 
 type Transaksi struct {
 	gorm.Model
+	Id       int `form:"id" json: "id" validate:"required"`
 	UserID   uint
 	Products []*Product `gorm:"many2many:transaksi_products;"`
 }
@@ -37,8 +38,8 @@ func ReadAllProductsInTransaksi(db *gorm.DB, transaksi *Transaksi, id int) (err 
 	return nil
 }
 
-func ReadTransaksiById(db *gorm.DB, transaksi *Transaksi, id int) (err error) {
-	err = db.Where("user_id=?", id).First(transaksi).Error
+func ReadTransaksiById(db *gorm.DB, transaksis *[]Transaksi, id int) (err error) {
+	err = db.Where("user_id=?", id).Find(transaksis).Error
 	if err != nil {
 		return err
 	}

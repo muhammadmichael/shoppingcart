@@ -55,6 +55,9 @@ func main() {
 	transaksi := app.Group("/checkout")
 	transaksi.Get("/:userid", CheckLogin, transaksiController.InsertToTransaksi)
 
+	history := app.Group("/history")
+	history.Get("/:userid", CheckLogin, transaksiController.GetTransaksi)
+
 	app.Get("/login", authController.Login)
 	app.Post("/login", authController.LoginPosted)
 	app.Get("/logout", authController.Logout)
