@@ -67,15 +67,8 @@ func (controller *CartController) GetShoppingCart(c *fiber.Ctx) error {
 		return c.SendStatus(500) // http 500 internal server error
 	}
 
-	// sess, err := controller.store.Get(c)
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// val := sess.Get("userId")
-
 	return c.Render("shoppingcart", fiber.Map{
 		"Title":    "Detail Product",
 		"Products": cart.Products,
-		// "UserId":   val,
 	})
 }

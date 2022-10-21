@@ -10,8 +10,6 @@ type Cart struct {
 	Products []*Product `gorm:"many2many:cart_products;"`
 }
 
-// CRUD
-
 func CreateCart(db *gorm.DB, newCart *Cart, userId uint) (err error) {
 	newCart.UserID = userId
 	err = db.Create(newCart).Error

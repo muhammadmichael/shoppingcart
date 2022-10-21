@@ -6,11 +6,12 @@ import (
 
 type User struct {
 	gorm.Model
-	Name     string `form:"name" json: "name" validate:"required"`
-	Username string `form:"username" json: "username" validate:"required"`
-	Email    string `form:"email" json: "email" validate:"required"`
-	Password string `form:"password" json: "password" validate:"required"`
-	Cart     Cart
+	Name       string `form:"name" json: "name" validate:"required"`
+	Username   string `form:"username" json: "username" validate:"required"`
+	Email      string `form:"email" json: "email" validate:"required"`
+	Password   string `form:"password" json: "password" validate:"required"`
+	Cart       Cart
+	Transaksis []Transaksi
 }
 
 func CreateUser(db *gorm.DB, newUser *User) (err error) {

@@ -37,6 +37,7 @@ func main() {
 	prodController := controllers.InitProductController(store)
 	authController := controllers.InitAuthController(store)
 	cartController := controllers.InitCartController(store)
+	transaksiController := controllers.InitTransaksiController(store)
 
 	prod := app.Group("/products")
 	prod.Get("/", prodController.GetAllProduct)
@@ -50,6 +51,9 @@ func main() {
 
 	cart := app.Group("/shoppingcart")
 	cart.Get("/:cartid", CheckLogin, cartController.GetShoppingCart)
+
+	transaksi := app.Group("/checkout")
+	transaksi.Get("/:userid", CheckLogin, transaksiController.InsertToTransaksi)
 
 	app.Get("/login", authController.Login)
 	app.Post("/login", authController.LoginPosted)
