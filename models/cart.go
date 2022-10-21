@@ -30,8 +30,8 @@ func InsertProductToCart(db *gorm.DB, insertedCart *Cart, product *Product) (err
 	return nil
 }
 
-func ReadAllProductsInCart(db *gorm.DB, cart *Cart) (err error) {
-	err = db.Preload("Products").Find(cart).Error
+func ReadAllProductsInCart(db *gorm.DB, cart *Cart, id int) (err error) {
+	err = db.Where("user_id=?", id).Preload("Products").Find(cart).Error
 	if err != nil {
 		return err
 	}
