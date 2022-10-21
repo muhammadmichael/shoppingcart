@@ -45,7 +45,7 @@ func (controller *TransaksiController) InsertToTransaksi(c *fiber.Ctx) error {
 	}
 
 	// Delete products in cart
-	errss := models.UpdateCart(controller.Db, &cart, intUserId)
+	errss := models.UpdateCart(controller.Db, cart.Products, &cart, uint(intUserId))
 	if errss != nil {
 		return c.SendStatus(500) // http 500 internal server error
 	}
