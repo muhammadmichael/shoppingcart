@@ -1,6 +1,7 @@
 {{template "partials/header" .}}
 
 <h1>Detail Produk</h1>
+
 <br>
 <div class="card-group">
     <div class="card">
@@ -30,7 +31,7 @@
     &nbsp;
     <a href="/products/hapus/{{.Product.Id}}" class="btn btn-danger">Hapus</a>
     &nbsp;
-    <a href="/products/addtocart/{{.Product.Id}}" class="btn btn-outline-success">Add to Cart</a>
+    <a href="/products/addtocart/{{.UserId}}/product/{{.Product.Id}}" class="btn btn-outline-success">Add to Cart</a>
 </div>
 
 {{template "partials/footer" .}}

@@ -12,7 +12,8 @@ type Cart struct {
 
 // CRUD
 
-func CreateCart(db *gorm.DB, newCart *Cart) (err error) {
+func CreateCart(db *gorm.DB, newCart *Cart, userId uint) (err error) {
+	newCart.UserID = userId
 	err = db.Create(newCart).Error
 	if err != nil {
 		return err
@@ -20,16 +21,25 @@ func CreateCart(db *gorm.DB, newCart *Cart) (err error) {
 	return nil
 }
 
-func InsertProductToCart(db *gorm.DB, product *Product) (err error) {
-	err = db.Create(product).Error
+func InsertProductToCart(db *gorm.DB, insertedCart *Cart, product *Product) (err error) {
+	insertedCart.Products = append(insertedCart.Products, product)
+	err = db.Save(insertedCart).Error
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func ReadCarts(db *gorm.DB, products *[]Product) (err error) {
-	err = db.Find(products).Error
+func ReadAllProductsInCart(db *gorm.DB, cart *Cart) (err error) {
+	err = db.Preload("Products").Find(cart).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func ReadCartById(db *gorm.DB, cart *Cart, id int) (err error) {
+	err = db.Where("user_id=?", id).First(cart).Error
 	if err != nil {
 		return err
 	}

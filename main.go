@@ -34,8 +34,9 @@ func main() {
 	}
 
 	// controllers
-	prodController := controllers.InitProductController()
+	prodController := controllers.InitProductController(store)
 	authController := controllers.InitAuthController(store)
+	cartController := controllers.InitCartController()
 
 	prod := app.Group("/products")
 	prod.Get("/", prodController.GetAllProduct)
@@ -45,6 +46,7 @@ func main() {
 	prod.Get("/ubah/:id", CheckLogin, prodController.UpdateProduct)
 	prod.Post("/ubah/:id", CheckLogin, prodController.AddUpdatedProduct)
 	prod.Get("/hapus/:id", CheckLogin, prodController.DeleteProduct)
+	prod.Get("/addtocart/:cartid/product/:productid", CheckLogin, cartController.InsertToCart)
 
 	app.Get("/login", authController.Login)
 	app.Post("/login", authController.LoginPosted)
